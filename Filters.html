@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filter Movies</title>
+    <link rel="stylesheet" href="theme.css">
+    <link rel="stylesheet" href="filters.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="logo">MovieHub</div>
+        <nav class="nav-links">
+            <a href="browse.html">Browse</a>
+            <a href="filters.html">Filters</a>
+            <a href="search.html">Search</a>
+            <a href="movie.html">Movie Details</a>
+        </nav>
+    </header>
+
+    <main class="filters-page">
+        <section class="page-header">
+            <h1>Filter Movies</h1>
+            <p>Browse movies by genre, release year, budget, and revenue.</p>
+        </section>
+
+        <section class="filters-layout">
+
+            <aside class="filters-sidebar">
+                <h2>Filters</h2>
+
+                <div class="filter-group">
+                    <label>Genres</label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox"> Action</label>
+                        <label><input type="checkbox"> Adventure</label>
+                        <label><input type="checkbox"> Comedy</label>
+                        <label><input type="checkbox"> Drama</label>
+                        <label><input type="checkbox"> Sci-Fi</label>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label for="yearMin">Release Year</label>
+                    <div class="range-inputs">
+                        <input type="number" id="yearMin" placeholder="From">
+                        <input type="number" id="yearMax" placeholder="To">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label for="budgetMin">Budget</label>
+                    <div class="range-inputs">
+                        <input type="number" id="budgetMin" placeholder="Min">
+                        <input type="number" id="budgetMax" placeholder="Max">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label for="revenueMin">Revenue</label>
+                    <div class="range-inputs">
+                        <input type="number" id="revenueMin" placeholder="Min">
+                        <input type="number" id="revenueMax" placeholder="Max">
+                    </div>
+                </div>
+
+                <div class="filter-buttons">
+                    <button type="button">Apply Filters</button>
+                    <button type="button" class="clear-btn">Clear All</button>
+                </div>
+            </aside>
+
+            <section class="results-section">
+                <div class="results-header">
+                    <h2>Results</h2>
+                    <p>Showing example movies</p>
+                </div>
+
+                <div class="movie-grid">
+                    <div class="movie-card">
+                        <img src="https://via.placeholder.com/200x300" alt="Movie Poster">
+                        <h3>Inception</h3>
+                        <p>Genre: Action, Sci-Fi</p>
+                        <p>Year: 2010</p>
+                        <p>Budget: $160,000,000</p>
+                        <p>Revenue: $836,000,000</p>
+                    </div>
+
+                    <div class="movie-card">
+                        <img src="https://via.placeholder.com/200x300" alt="Movie Poster">
+                        <h3>Avatar</h3>
+                        <p>Genre: Adventure, Sci-Fi</p>
+                        <p>Year: 2009</p>
+                        <p>Budget: $237,000,000</p>
+                        <p>Revenue: $2,923,000,000</p>
+                    </div>
+
+                    <div class="movie-card">
+                        <img src="https://via.placeholder.com/200x300" alt="Movie Poster">
+                        <h3>Joker</h3>
+                        <p>Genre: Drama</p>
+                        <p>Year: 2019</p>
+                        <p>Budget: $55,000,000</p>
+                        <p>Revenue: $1,074,000,000</p>
+                    </div>
+
+                    <div class="movie-card">
+                        <img src="https://via.placeholder.com/200x300" alt="Movie Poster">
+                        <h3>Interstellar</h3>
+                        <p>Genre: Adventure, Drama</p>
+                        <p>Year: 2014</p>
+                        <p>Budget: $165,000,000</p>
+                        <p>Revenue: $701,000,000</p>
+                    </div>
+                </div>
+            </section>
+
+        </section>
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,116 @@
+.filters-page {
+    padding: 30px;
+}
+
+.page-header {
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    margin-bottom: 10px;
+}
+
+.filters-layout {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+.filters-sidebar {
+    width: 280px;
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 12px;
+    box-sizing: border-box;
+}
+
+.filters-sidebar h2 {
+    margin-bottom: 20px;
+}
+
+.filter-group {
+    margin-bottom: 25px;
+}
+
+.filter-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.checkbox-group label {
+    font-weight: normal;
+    margin-bottom: 0;
+}
+
+.range-inputs {
+    display: flex;
+    gap: 10px;
+}
+
+.range-inputs input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    background: #2a2a2a;
+    color: white;
+    box-sizing: border-box;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filter-buttons button {
+    padding: 10px 16px;
+    border-radius: 8px;
+}
+
+.clear-btn {
+    background: #444;
+    color: white;
+}
+
+.results-section {
+    flex: 1;
+}
+
+.results-header {
+    margin-bottom: 20px;
+}
+
+.movie-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.movie-card {
+    background: #1e1e1e;
+    padding: 15px;
+    border-radius: 12px;
+}
+
+.movie-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.movie-card h3 {
+    margin-bottom: 10px;
+}
+
+.movie-card p {
+    margin: 6px 0;
+}
