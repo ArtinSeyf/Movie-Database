@@ -1,0 +1,75 @@
+body {
+    margin: 0;
+    background-color: black;
+    color: white;
+    }
+
+/* Navigation Bar */
+.navbar {
+    background-color: black;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: Rockwell, 'Rockwell Nova', 'Roboto Slab', 'DejaVu Serif', 'Sitka Small', serif;
+    font-weight: 500;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.links a {
+    color: white;
+    text-decoration: none;
+    margin-left: 20px;
+    font-size: 16px;
+}
+
+.links a:hover {
+    text-decoration: underline;
+    font-size: 18px;
+}
+
+.MovieContainer {
+    width: 100%;
+}
+
+.FeaturedMovies {
+    position: relative;
+}
+
+.FeaturedMovies img {
+    width: 100%;
+    height: 50vh;
+    object-fit: cover;
+    display: block;
+    object-position:top;
+}
+
+.MovieOverlay {
+    position: absolute;
+    top: 10%;
+    right: 2%;
+    width: 350px;
+    color: white;
+}
+.MovieOptions{
+    display: flex;
+}
+.ScrollMovies{
+    display: flex;
+    flex-direction: row;
+    padding-top: 30px;
+    padding-left: 10px;
+    gap: 20px; /*gap between the movies*/
+}
+
+.ScrollMovies img{
+    width: 100%;
+    height: 240px;
+}
+
+
+
