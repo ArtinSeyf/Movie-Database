@@ -39,6 +39,26 @@ def filter_movies():
         "revenueMax": revenue_max
     })
 
+# if release_date stores just the year (e.g. "2010")
+@app.route("/filter/year/<year>")
+def filter_year(year):
+    db = get_db()
+    rows = db.execute(
+        "SELECT * FROM movies WHERE release_date = ?",
+        (year,)
+    ).fetchall()
+    return jsonify([dict(r) for r in rows])
+
+# if release_date stores full dates like "2010-07-16" (recommended)
+@app.route("/filter/year/<year>")
+def filter_year(year):
+    db = get_db()
+    rows = db.execute(
+        "SELECT * FROM movies WHERE substr(release_date, 1, 4) = ?",
+        (year,)
+    ).fetchall()
+    return jsonify([dict(r) for r in rows])
+
 # runs app
 if __name__ == "__main__":
     app.run(debug=True)
