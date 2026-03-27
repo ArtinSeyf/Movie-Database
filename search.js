@@ -28,7 +28,7 @@ function searchMovies() {
 
                 card.innerHTML = `
                     <h3>${movie.title}</h3>
-                    <p>Year: ${movie.release_date || "N/A"}</p>
+                    <p>Year: ${movie.release_year || "N/A"}</p>
                 `;
 
                 resultsGrid.appendChild(card);
