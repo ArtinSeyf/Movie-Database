@@ -1,0 +1,352 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;700&display=swap');
+
+:root {
+    --bg-main: #121212;
+    --bg-secondary: #1f1f1f;
+    --bg-card: #181818;
+
+    --text-main: #ffffff;
+    --text-secondary: #b3b3b3;
+
+    --accent: #9b5cff;       /* Purple */
+    --accent-hover: #7f3cff;
+
+    --border: #2c2c2c;
+    --shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+    --radius: 10px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--bg-main);
+    color: var(--text-main);
+    font-family: 'Open Sans', Arial, sans-serif;
+    line-height: 1.6;
+}
+
+/* ===== Shared Navbar ===== */
+.navbar,
+header.navbar {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.logo {
+    color: var(--accent);
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.nav-links,
+.links {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.navbar a,
+.nav-links a,
+.links a {
+    color: var(--text-main);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.navbar a:hover,
+.nav-links a:hover,
+.links a:hover {
+    color: var(--accent);
+}
+
+/* ===== General headings/text ===== */
+h1, h2, h3 {
+    color: var(--accent);
+    margin-bottom: 12px;
+    font-weight: 700;
+}
+
+p, label {
+    color: var(--text-secondary);
+}
+
+/* ===== Home page ===== */
+.MovieContainer {
+    width: 90%;
+    max-width: 1250px;
+    margin: 30px auto 20px;
+}
+
+.MovieContent {
+    position: relative;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+.FeaturedMovies img {
+    width: 100%;
+    display: block;
+    max-height: 500px;
+    object-fit: cover;
+}
+
+.MovieOverlay {
+    position: absolute;
+    left: 30px;
+    bottom: 30px;
+    max-width: 320px;
+    width: 40%;
+    height: auto;
+}
+
+.MovieOptions {
+    width: 90%;
+    max-width: 1250px;
+    margin: 20px auto 40px;
+}
+
+.ScrollMovies {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 18px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+    box-shadow: var(--shadow);
+}
+
+.ScrollMovies img {
+    width: 100%;
+    border-radius: 8px;
+    object-fit: cover;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ScrollMovies img:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow);
+}
+
+/* ===== Filters page ===== */
+.filters-page {
+    width: 90%;
+    max-width: 1250px;
+    margin: 30px auto;
+}
+
+.page-header {
+    margin-bottom: 24px;
+}
+
+.page-header h1 {
+    font-size: 2rem;
+    margin-bottom: 8px;
+}
+
+.page-header p {
+    color: var(--text-secondary);
+}
+
+.filters-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.filters-sidebar {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+    box-shadow: var(--shadow);
+}
+
+.filters-sidebar h2 {
+    color: var(--accent);
+    margin-bottom: 18px;
+    font-size: 1.3rem;
+}
+
+.filter-group {
+    margin-bottom: 20px;
+}
+
+.filter-group > label {
+    display: block;
+    color: var(--text-main);
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.checkbox-group label {
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.95rem;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: auto;
+    accent-color: var(--accent);
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    background: #111111;
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    outline: none;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--accent);
+}
+
+.range-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+button {
+
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+button:hover {
+    background: var(--accent-hover);
+}
+
+#applyFiltersBtn {
+    background: var(--accent);
+    color: #121212;
+}
+
+.clear-btn {
+    background: transparent;
+    color: var(--text-main);
+    border: 1px solid var(--border);
+}
+
+.results-section {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+    box-shadow: var(--shadow);
+}
+
+.results-header {
+    margin-bottom: 18px;
+}
+
+.results-header h2 {
+    color: var(--accent);
+    margin-bottom: 6px;
+}
+
+.results-header p {
+    color: var(--text-secondary);
+}
+
+.movie-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+}
+
+.movie-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.movie-card:hover {
+   transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(155, 92, 255, 0.15);
+
+}
+
+.movie-card h3 {
+    color: var(--text-main);
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+}
+
+.movie-card p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 900px) {
+    .filters-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .navbar,
+    header.navbar {
+        padding: 14px 20px;
+    }
+
+    .filters-page,
+    .MovieContainer,
+    .MovieOptions {
+        width: 94%;
+    }
+
+    .MovieOverlay {
+        position: static;
+        display: block;
+        width: 60%;
+        max-width: 260px;
+        margin: 20px;
+    }
+}
