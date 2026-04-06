@@ -10,13 +10,13 @@ function searchMovies() {
         return;
     }
 
-    fetch(`http://127.0.0.1:5000/search?q=${query}`)
+    fetch(`http://127.0.0.1:5000/search?query=${query}`)
         .then(response => response.json())
         .then(data => {
 
             resultsGrid.innerHTML = "";
 
-            if (data.length === 0) {
+            if (!data || data.length === 0) {
                 resultsGrid.innerHTML = "<p>No results found.</p>";
                 return;
             }
