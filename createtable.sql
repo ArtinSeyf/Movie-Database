@@ -18,7 +18,8 @@ CREATE TABLE genres (
 -- links movies to genres (many to many)
 CREATE TABLE movie_genres (
     movie_id INTEGER,
-    genre_id INTEGER
+    genre_id INTEGER,
+    PRIMARY KEY (movie_id, genre_id)
 );
 
 -- people table (actors & directors)
@@ -30,11 +31,13 @@ CREATE TABLE people (
 -- links movies to actors
 CREATE TABLE movie_cast (
     movie_id INTEGER,
-    person_id INTEGER
+    person_id INTEGER,
+    PRIMARY KEY (movie_id, person_id)
 );
 
 -- links movies to directors
 CREATE TABLE movie_directors (
     movie_id INTEGER,
-    person_id INTEGER
+    person_id INTEGER,
+    PRIMARY KEY (movie_id, person_id)
 );
