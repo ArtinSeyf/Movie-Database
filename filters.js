@@ -6,7 +6,7 @@ document.getElementById("applyFiltersBtn").addEventListener("click", function ()
         return;
     }
 
-    fetch(`http://127.0.0.1:5000/filter/year/${year}`)
+    fetch(`http://127.0.0.1:5000/filter?yearMin=${year}`)
         .then(response => response.json())
         .then(data => {
             const container = document.querySelector(".movie-grid");
@@ -23,7 +23,7 @@ document.getElementById("applyFiltersBtn").addEventListener("click", function ()
 
                 card.innerHTML = `
                     <h3>${movie.title}</h3>
-                    <p>Year: ${movie.release_date || "N/A"}</p>
+                    <p>Year: ${movie.release_year || "N/A"}</p>
                 `;
 
                 container.appendChild(card);
