@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Filter Movies</title>
     <link rel="stylesheet" href="theme.css">
+    <link rel="stylesheet" href="Filters.css">
 </head>
 <body>
 
@@ -42,8 +43,11 @@
                 </div>
 
                 <div class="filter-group">
-                    <label for="yearMin">Release Year</label>
-                    <input type="number" id="yearMin" placeholder="Enter year">
+                    <label>Release Year</label>
+                    <div class="range-inputs">
+                        <input type="number" id="yearMin" placeholder="Min">
+                        <input type="number" id="yearMax" placeholder="Max">
+                    </div>
                 </div>
 
                 <div class="filter-group">
@@ -64,26 +68,18 @@
 
                 <div class="filter-buttons">
                     <button id="applyFiltersBtn" type="button">Apply Filters</button>
-                    <button type="button" class="clear-btn">Clear All</button>
+                    <button id="clearFiltersBtn" type="button" class="clear-btn">Clear All</button>
                 </div>
             </aside>
 
             <section class="results-section">
                 <div class="results-header">
                     <h2>Results</h2>
-                    <p>Showing example movies</p>
+                    <p class="results-subtitle">Results appear here after you apply filters</p>
                 </div>
 
                 <div class="movie-grid">
-                    <div class="movie-card">
-                        <h3>Inception</h3>
-                        <p>Year: 2010</p>
-                    </div>
-
-                    <div class="movie-card">
-                        <h3>Avatar</h3>
-                        <p>Year: 2009</p>
-                    </div>
+                    <!-- Results will be injected here. No example movies shown by default. -->
                 </div>
             </section>
 

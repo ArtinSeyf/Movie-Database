@@ -1,35 +1,82 @@
-document.getElementById("applyFiltersBtn").addEventListener("click", function () {
-    const year = document.getElementById("yearMin").value;
+document.addEventListener("DOMContentLoaded", function () {
+    const applyBtn = document.getElementById("applyFiltersBtn");
+    const clearBtn = document.getElementById("clearFiltersBtn");
+    const container = document.querySelector(".movie-grid");
 
-    if (year === "") {
-        alert("Please enter a year.");
-        return;
+    // Helper to clear results area
+    function clearResults() {
+        if (container) container.innerHTML = "";
     }
 
-    fetch(`http://127.0.0.1:5000/filter?yearMin=${year}`)
-        .then(response => response.json())
-        .then(data => {
-            const container = document.querySelector(".movie-grid");
-            container.innerHTML = "";
+    // Apply filters / search
+    if (applyBtn) {
+        applyBtn.addEventListener("click", function () {
+            const yearMin = document.getElementById("yearMin").value;
+            const yearMax = document.getElementById("yearMax").value;
 
-            if (data.length === 0) {
-                container.innerHTML = "<p>No movies found for that year.</p>";
+            if (yearMin === "" && yearMax === "") {
+                alert("Please enter a minimum or maximum year.");
                 return;
             }
 
-            data.forEach(movie => {
-                const card = document.createElement("div");
-                card.classList.add("movie-card");
+            // clear previous results while fetching
+            clearResults();
 
-                card.innerHTML = `
-                    <h3>${movie.title}</h3>
-                    <p>Year: ${movie.release_year || "N/A"}</p>
-                `;
+            // Determine backend URL. Live Server usually serves the frontend on a
+            // different port, so construct a backend host on the same machine.
+            // Update backendPort if your Flask app runs on a different port.
+            const backendPort = 5001; // <-- keep in sync with app.py
+            const backendBase = `http://${location.hostname}:${backendPort}`;
 
-                container.appendChild(card);
-            });
-        })
-        .catch(error => {
-            console.error("Error fetching filtered movies:", error);
+            // Build query params depending on which fields are present
+            const params = [];
+            if (yearMin !== "") params.push(`yearMin=${encodeURIComponent(yearMin)}`);
+            if (yearMax !== "") params.push(`yearMax=${encodeURIComponent(yearMax)}`);
+
+            const url = `${backendBase}/filter?${params.join("&")}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (!container) return;
+
+                    if (!Array.isArray(data) || data.length === 0) {
+                        container.innerHTML = "<p>No movies found for that year.</p>";
+                        return;
+                    }
+
+                    data.forEach(movie => {
+                        const card = document.createElement("div");
+                        card.classList.add("movie-card");
+
+                        card.innerHTML = `
+                            <h3>${movie.title}</h3>
+                            <p>Year: ${movie.release_year || "N/A"}</p>
+                        `;
+
+                        container.appendChild(card);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error fetching filtered movies:", error);
+                    if (container) container.innerHTML = "<p>Error retrieving results. See console for details.</p>";
+                });
         });
+    }
+
+    // Clear filters
+    if (clearBtn) {
+        clearBtn.addEventListener("click", function () {
+            // Clear number inputs
+            const numberInputs = document.querySelectorAll('input[type="number"]');
+            numberInputs.forEach(i => i.value = "");
+
+            // Uncheck any checkboxes in the filters area
+            const checkboxes = document.querySelectorAll('.checkbox-group input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = false);
+
+            // Clear results area
+            clearResults();
+        });
+    }
 });

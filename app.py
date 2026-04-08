@@ -3,6 +3,27 @@ import sqlite3
 
 app = Flask(__name__)
 
+# Enable flask-cors if installed (optional). If it's not installed we fall back
+# to an `after_request` handler below that will add the necessary headers.
+try:
+    from flask_cors import CORS
+    CORS(app)
+except ImportError:
+    pass
+
+
+@app.after_request
+def add_cors_headers(response):
+    """Fallback: ensure CORS headers are always present for browser requests.
+
+    Uses a permissive '*' origin which is fine for local development. For
+    production you should restrict this to your known frontend origin.
+    """
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
+    response.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
+    return response
+
 def get_db():
     conn = sqlite3.connect("movies.db")
     conn.row_factory = sqlite3.Row
@@ -62,16 +83,23 @@ def filter_movies():
 
     db = get_db()
 
-    query = "SELECT id, title FROM movies WHERE 1=1"
+    # Select release_year so the frontend can display the movie year
+    query = "SELECT id, title, release_year FROM movies WHERE 1=1"
     params = []
 
-    if year_min:
-        query += " AND release_year >= ?"
+    # If only a single year is provided (yearMin but not yearMax) treat it as
+    # an exact year match. If both are provided, use a range.
+    if year_min and not year_max:
+        query += " AND release_year = ?"
         params.append(year_min)
+    else:
+        if year_min:
+            query += " AND release_year >= ?"
+            params.append(year_min)
 
-    if year_max:
-        query += " AND release_year <= ?"
-        params.append(year_max)
+        if year_max:
+            query += " AND release_year <= ?"
+            params.append(year_max)
 
     if budget_min:
         query += " AND budget >= ?"
@@ -95,4 +123,8 @@ def filter_movies():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Run on port 5001 to avoid conflicts with other local services (e.g. AirPlay/AirTunes).
+    # Disable the debug reloader so the process keeps running correctly when started
+    # as a background job (nohup). For local development you can set debug=True
+    # but the reloader can spawn child processes that make backgrounding fragile.
+    app.run(debug=False, port=5001)
