@@ -1,4 +1,4 @@
--- movies table (main data)
+-- create main movies table
 CREATE TABLE movies (
     id INTEGER PRIMARY KEY,
     title TEXT,
@@ -9,33 +9,33 @@ CREATE TABLE movies (
     revenue INTEGER
 );
 
--- genres table (list of genres)
+-- create genres table
 CREATE TABLE genres (
     id INTEGER PRIMARY KEY,
     name TEXT
 );
 
--- links movies to genres (many to many)
+-- link movies to genres (many-to-many)
 CREATE TABLE movie_genres (
     movie_id INTEGER,
     genre_id INTEGER,
     PRIMARY KEY (movie_id, genre_id)
 );
 
--- people table (actors & directors)
+-- create people table (actors + directors)
 CREATE TABLE people (
     id INTEGER PRIMARY KEY,
     name TEXT
 );
 
--- links movies to actors
+-- link movies to actors
 CREATE TABLE movie_cast (
     movie_id INTEGER,
     person_id INTEGER,
     PRIMARY KEY (movie_id, person_id)
 );
 
--- links movies to directors
+-- link movies to directors
 CREATE TABLE movie_directors (
     movie_id INTEGER,
     person_id INTEGER,
