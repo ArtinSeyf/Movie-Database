@@ -3,33 +3,14 @@ import sqlite3
 
 app = Flask(__name__)
 
-# Enable flask-cors if installed (optional). If it's not installed we fall back
-# to an `after_request` handler below that will add the necessary headers.
-try:
-    from flask_cors import CORS
-    CORS(app)
-except ImportError:
-    pass
-
-
-@app.after_request
-def add_cors_headers(response):
-    """Fallback: ensure CORS headers are always present for browser requests.
-
-    Uses a permissive '*' origin which is fine for local development. For
-    production you should restrict this to your known frontend origin.
-    """
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
-    response.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
-    return response
-
+# connect to database
 def get_db():
     conn = sqlite3.connect("movies.db")
-    conn.row_factory = sqlite3.Row
+    conn.row_factory = sqlite3.Row  # allows rows to be used like dictionaries
     return conn
 
 
+# simple test route
 @app.route("/")
 def home():
     return "backend running"
@@ -39,39 +20,51 @@ def home():
 @app.route("/movies")
 def movies():
     db = get_db()
-    rows = db.execute("SELECT id, title FROM movies LIMIT 50").fetchall()
+    rows = db.execute(
+        "SELECT id, title, release_year FROM movies LIMIT 50"
+    ).fetchall()
+
     return jsonify([dict(row) for row in rows])
 
 
-# get one movie
-@app.route("/movie/<id>")
+# get one movie by id
+@app.route("/movie/<int:id>")
 def movie(id):
     db = get_db()
-    row = db.execute("SELECT * FROM movies WHERE id = ?", (id,)).fetchone()
+    row = db.execute(
+        "SELECT * FROM movies WHERE id = ?",
+        (id,)
+    ).fetchone()
 
     if row:
         return jsonify(dict(row))
     return jsonify({"error": "not found"})
 
 
-# search by title
+# search movies by title
 @app.route("/search")
 def search():
-    query = request.args.get("query")
+    query = request.args.get("q")  # matches your search.js
+
+    # if nothing entered, return empty list
+    if not query:
+        return jsonify([])
 
     db = get_db()
+
     rows = db.execute(
-        "SELECT id, title FROM movies WHERE title LIKE ? LIMIT 20",
-        ("%" + query + "%",)
+        "SELECT id, title, release_year FROM movies WHERE title LIKE ? LIMIT 20",
+        (f"%{query}%",)
     ).fetchall()
 
     return jsonify([dict(row) for row in rows])
 
 
-# filter (year, budget, revenue)
+# filter movies (year, budget, revenue)
 @app.route("/filter")
 def filter_movies():
 
+    # get values from URL
     year_min = request.args.get("yearMin")
     year_max = request.args.get("yearMax")
 
@@ -83,39 +76,35 @@ def filter_movies():
 
     db = get_db()
 
-    # Select release_year so the frontend can display the movie year
+    # start basic query
     query = "SELECT id, title, release_year FROM movies WHERE 1=1"
     params = []
 
-    # If only a single year is provided (yearMin but not yearMax) treat it as
-    # an exact year match. If both are provided, use a range.
-    if year_min and not year_max:
-        query += " AND release_year = ?"
-        params.append(year_min)
-    else:
-        if year_min:
-            query += " AND release_year >= ?"
-            params.append(year_min)
+    # add filters only if user entered something
 
-        if year_max:
-            query += " AND release_year <= ?"
-            params.append(year_max)
+    if year_min:
+        query += " AND release_year >= ?"
+        params.append(int(year_min))
+
+    if year_max:
+        query += " AND release_year <= ?"
+        params.append(int(year_max))
 
     if budget_min:
         query += " AND budget >= ?"
-        params.append(budget_min)
+        params.append(int(budget_min))
 
     if budget_max:
         query += " AND budget <= ?"
-        params.append(budget_max)
+        params.append(int(budget_max))
 
     if revenue_min:
         query += " AND revenue >= ?"
-        params.append(revenue_min)
+        params.append(int(revenue_min))
 
     if revenue_max:
         query += " AND revenue <= ?"
-        params.append(revenue_max)
+        params.append(int(revenue_max))
 
     rows = db.execute(query, params).fetchall()
 
@@ -123,8 +112,4 @@ def filter_movies():
 
 
 if __name__ == "__main__":
-    # Run on port 5001 to avoid conflicts with other local services (e.g. AirPlay/AirTunes).
-    # Disable the debug reloader so the process keeps running correctly when started
-    # as a background job (nohup). For local development you can set debug=True
-    # but the reloader can spawn child processes that make backgrounding fragile.
-    app.run(debug=False, port=5001)
+    app.run(debug=True)
