@@ -156,6 +156,15 @@ p, label {
     from {transform: translateX(0);} /*Move from offset 0*/
     to {transform: translateX(-50%);} /*move left by half container width*/
 }
+/* ===== TopRated Page ===== */
+.HWTops, .KTops, .BWTops{ /*Display as a row*/
+    display: flex;
+    flex-direction: row;
+}
+.HWMovies img, .KTops img, .BWTops img{ /*Img sizing*/
+    width: auto;
+    height: 240px;
+}
 
 /* ===== Filters page ===== */
 .filters-page {
