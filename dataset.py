@@ -30,6 +30,8 @@ movies["runtime"] = pd.to_numeric(movies["runtime"], errors="coerce").fillna(0).
 # remove movies with no title
 movies = movies.dropna(subset=["title"])
 
+# remove duplicate movie IDs (keep first occurrence)
+movies = movies.drop_duplicates(subset=["id"], keep="first")
 
 # ---- insert into database ----
 
