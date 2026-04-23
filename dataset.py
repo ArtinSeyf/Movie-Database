@@ -40,6 +40,9 @@ conn = sqlite3.connect("movies.db")
 # clear table first so we don't duplicate data when re-running
 conn.execute("DELETE FROM movies")
 
+# remove duplicate ids that may exist in the CSV to avoid UNIQUE constraint errors
+movies = movies.drop_duplicates(subset=["id"]) 
+
 # insert cleaned data into database
 movies[
     ["id", "title", "overview", "release_year", "runtime", "budget", "revenue"]

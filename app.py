@@ -1,7 +1,18 @@
 from flask import Flask, jsonify, request
+from flask import send_from_directory
+try:
+    from flask_cors import CORS
+except Exception:
+    CORS = None
 import sqlite3
 
-app = Flask(__name__)
+# Serve static frontend files directly from the project root so the app and UI
+# run on the same origin. This avoids Live Server auto-reload injection and CORS
+# surprises while developing locally.
+app = Flask(__name__, static_folder='.', static_url_path='')
+# enable flask-cors if available; otherwise fallback via after_request below
+if CORS:
+    CORS(app)
 
 # connect to database
 def get_db():
@@ -13,7 +24,15 @@ def get_db():
 # simple test route
 @app.route("/")
 def home():
+    # Keep a small backend landing page, but static files (e.g. Filters.html)
+    # will be served directly at /Filters.html by Flask's static handler.
     return "backend running"
+
+
+# Optional explicit route to serve the frontend index if needed
+@app.route('/Filters.html')
+def filters_page():
+    return send_from_directory('.', 'Filters.html')
 
 
 # get movies (used for homepage)
@@ -112,4 +131,15 @@ def filter_movies():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Run on 5001 to avoid macOS services on 5000 and disable the reloader so
+    # background/nohup runs are stable.
+    app.run(debug=False, port=5001)
+
+
+@app.after_request
+def add_cors_headers(response):
+    # fallback CORS headers for local development
+    response.headers.setdefault('Access-Control-Allow-Origin', '*')
+    response.headers.setdefault('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.setdefault('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
+    return response

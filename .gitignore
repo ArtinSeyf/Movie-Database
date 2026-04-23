@@ -1,0 +1,16 @@
+# Ignore dataset CSVs and database files
+archive/*.csv
+movies.db
+movies.db.bak
+
+# Logs and runtime files
+*.log
+
+# macOS files
+.DS_Store
+
+# Python virtualenv
+venv/
+
+# VSCode workspace settings (optional)
+.vscode/*
