@@ -135,6 +135,13 @@ p, label {
     width: 100%;
     overflow: hidden; /* hide the scroll */
 }
+@keyframes Move{
+    from {transform: translateX(0);} /*Move from offset 0*/
+    to {transform: translateX(-50%);} /*move left by half container width*/
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
 /*  TopRated Page */
 .HWTops, .KTops, .BWTops {
     display: flex;
