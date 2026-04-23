@@ -77,7 +77,64 @@ p, label {
     color: var(--text-secondary);
 }
 
-
+/* ===== Home page ===== */
+.MovieContainer {
+    width: 100%;
+}
+.FeaturedMovies {
+    position: relative;
+}
+.FeaturedMovies img {
+    width: 100%;
+    height: 50vh;
+    object-fit: cover; /*fits inside the block*/
+    display: block;
+    object-position:top;
+}
+.MovieOverlay {
+    position: absolute;
+    top: 10%;
+    right: 2%;
+    width: 350px;
+    color: white;
+}
+.ScrollMovies {
+    display: flex;
+    overflow-x: auto;
+    gap: 20px;
+}
+.ScrollMovies div {
+    display: flex;
+    flex-direction: row; /*appear in a row*/
+    padding-top: 30px;
+    gap: 20px;
+    flex: none; /*prevents overlap of movies*/
+}
+.ScrollMovies img {
+    width: auto;
+    height: 240px;
+}
+.ScrollMovies img:hover {
+    transform: translateY(-15px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /*smoother transition*/
+}
+.ScrollMovies::-webkit-scrollbar { /*get rid of scroll bar*/
+    display: none;
+}
+.Scroll-wrap{
+    display: flex;
+    align-items: center;
+}
+.LeftArrow, .RightArrow { /*adjust arrow imgs*/
+    height: 30px;
+    width: auto;
+    cursor: pointer;
+}
+/* AutoMove carousel of movie posters*/
+.carousel {
+    width: 100%;
+    overflow: hidden; /* hide the scroll */
+}
 /*  TopRated Page */
 .HWTops, .KTops, .BWTops {
     display: flex;
