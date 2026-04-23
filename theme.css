@@ -135,12 +135,22 @@ p, label {
     width: 100%;
     overflow: hidden; /* hide the scroll */
 }
+.AutoMove {
+    display: flex;
+    flex-direction: row;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    gap: 15px;
+    animation: Move 10s linear infinite; /*Moves continously*/
+}
+.carousel img {
+    height: 150px;
+    width: auto;
+}
+
 @keyframes Move{
     from {transform: translateX(0);} /*Move from offset 0*/
     to {transform: translateX(-50%);} /*move left by half container width*/
-    gap: 20px;
-    flex-wrap: wrap;
-    margin-bottom: 30px;
 }
 /*  TopRated Page */
 .HWTops, .KTops, .BWTops {
