@@ -176,7 +176,32 @@ p, label {
     height: 240px;
     border-radius: 8px;
 }
-
+/* Single Movies from Home.htmls */
+.SMPoster img{  
+    width: auto;
+    height: 450px;
+}
+.SMPoster {  /*This styling will apply to all the movies clicked from home.html*/
+    padding-left: 20px;
+    padding-top: 30px;
+}
+.SingleMovie{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+.SMInfo {
+    padding-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start; /* stops stretching */
+}
+.Cast img{
+    width: auto;
+    height: 220px;
+    margin-right: 5px;
+}
 /*  Filters page */
 .filters-page {
     width: 90%;
