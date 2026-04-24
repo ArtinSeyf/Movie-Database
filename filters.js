@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const applyBtn = document.getElementById("applyFiltersBtn");
     const clearBtn = document.getElementById("clearFiltersBtn");
     const container = document.querySelector(".movie-grid");
+    const resultsSubtitle = document.querySelector('.results-subtitle');
 
     // Helper to clear results area
     function clearResults() {
@@ -63,11 +64,25 @@ document.addEventListener("DOMContentLoaded", function () {
                 .then(response => response.json())
                 .then(data => {
                     console.log('Filter response:', data);
+                    if (resultsSubtitle) {
+                        resultsSubtitle.textContent = `Showing ${Array.isArray(data)?data.length:0} results`;
+                    }
+                    console.log('Filter response:', data);
                     if (!container) return;
 
                     if (!Array.isArray(data) || data.length === 0) {
                         container.innerHTML = "<p>No movies matched those filters.</p>";
                         return;
+                    }
+
+                    // show currently applied filters for clarity
+                    const activeFilters = [];
+                    if (yearMin) activeFilters.push(`Year: ${yearMin || ''}-${yearMax || ''}`);
+                    if (budgetMin || budgetMax) activeFilters.push(`Budget: ${budgetMin || ''}-${budgetMax || ''}`);
+                    if (revenueMin || revenueMax) activeFilters.push(`Revenue: ${revenueMin || ''}-${revenueMax || ''}`);
+                    if (checkedGenres.length) activeFilters.push(`Genres: ${checkedGenres.join(', ')}`);
+                    if (resultsSubtitle && activeFilters.length) {
+                        resultsSubtitle.textContent += ' — ' + activeFilters.join(' | ');
                     }
 
                     data.forEach(movie => {
