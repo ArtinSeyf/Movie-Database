@@ -14,8 +14,19 @@ document.addEventListener("DOMContentLoaded", function () {
             const yearMin = document.getElementById("yearMin").value;
             const yearMax = document.getElementById("yearMax").value;
 
-            if (yearMin === "" && yearMax === "") {
-                alert("Please enter a minimum or maximum year.");
+            // collect budget & revenue
+            const budgetMin = document.getElementById("budgetMin").value;
+            const budgetMax = document.getElementById("budgetMax").value;
+
+            const revenueMin = document.getElementById("revenueMin").value;
+            const revenueMax = document.getElementById("revenueMax").value;
+
+            // collect selected genres
+            const checkedGenres = Array.from(document.querySelectorAll('.checkbox-group input[type="checkbox"]:checked')).map(cb => cb.value);
+
+            // require at least one filter (not just year)
+            if (yearMin === "" && yearMax === "" && budgetMin === "" && budgetMax === "" && revenueMin === "" && revenueMax === "" && checkedGenres.length === 0) {
+                alert("Please enter at least one filter.");
                 return;
             }
 
@@ -26,22 +37,36 @@ document.addEventListener("DOMContentLoaded", function () {
             // different port, so construct a backend host on the same machine.
             // Update backendPort if your Flask app runs on a different port.
             const backendPort = 5001; // <-- keep in sync with app.py
-            const backendBase = `http://${location.hostname}:${backendPort}`;
+            // When opening the HTML file directly (file://...) location.hostname is empty.
+            // Fall back to localhost so the fetch still targets the local Flask server.
+            const host = location.hostname || 'localhost';
+            const backendBase = `http://${host}:${backendPort}`;
 
             // Build query params depending on which fields are present
             const params = [];
             if (yearMin !== "") params.push(`yearMin=${encodeURIComponent(yearMin)}`);
             if (yearMax !== "") params.push(`yearMax=${encodeURIComponent(yearMax)}`);
 
+            if (budgetMin !== "") params.push(`budgetMin=${encodeURIComponent(budgetMin)}`);
+            if (budgetMax !== "") params.push(`budgetMax=${encodeURIComponent(budgetMax)}`);
+
+            if (revenueMin !== "") params.push(`revenueMin=${encodeURIComponent(revenueMin)}`);
+            if (revenueMax !== "") params.push(`revenueMax=${encodeURIComponent(revenueMax)}`);
+
+            // pass genres as repeated query params, e.g. ?genres=Action&genres=Comedy
+            checkedGenres.forEach(g => params.push(`genres=${encodeURIComponent(g)}`));
+
             const url = `${backendBase}/filter?${params.join("&")}`;
 
+            console.log('Fetching URL:', url);
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
+                    console.log('Filter response:', data);
                     if (!container) return;
 
                     if (!Array.isArray(data) || data.length === 0) {
-                        container.innerHTML = "<p>No movies found for that year.</p>";
+                        container.innerHTML = "<p>No movies matched those filters.</p>";
                         return;
                     }
 
@@ -52,6 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         card.innerHTML = `
                             <h3>${movie.title}</h3>
                             <p>Year: ${movie.release_year || "N/A"}</p>
+                            <p>Budget: ${movie.budget || "N/A"} — Revenue: ${movie.revenue || "N/A"}</p>
                         `;
 
                         container.appendChild(card);

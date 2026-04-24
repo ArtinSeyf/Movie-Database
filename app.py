@@ -92,11 +92,13 @@ def filter_movies():
 
     revenue_min = request.args.get("revenueMin")
     revenue_max = request.args.get("revenueMax")
+    # genres can be passed multiple times: ?genres=Action&genres=Comedy
+    genres = request.args.getlist("genres")
 
     db = get_db()
 
-    # start basic query
-    query = "SELECT id, title, release_year FROM movies WHERE 1=1"
+    # start basic query (include budget/revenue so frontend can show them)
+    query = "SELECT id, title, release_year, budget, revenue, overview FROM movies WHERE 1=1"
     params = []
 
     # add filters only if user entered something
@@ -124,6 +126,31 @@ def filter_movies():
     if revenue_max:
         query += " AND revenue <= ?"
         params.append(int(revenue_max))
+
+    # if genres provided, match any movie whose title or overview contains
+    # the genre string. This is a heuristic because the simple DB schema
+    # in this project doesn't include a normalized genres table for queries.
+    if genres:
+        # build a clause like: AND (LOWER(title) LIKE ? OR LOWER(overview) LIKE ? OR ...)
+        genre_clauses = []
+        for _ in genres:
+            genre_clauses.append("(LOWER(title) LIKE ? OR LOWER(overview) LIKE ?)")
+
+        query += " AND (" + " OR ".join(genre_clauses) + ")"
+
+        # add parameters for each genre (title and overview), using lowercased
+        for g in genres:
+            g_param = f"%{g.lower()}%"
+            params.append(g_param)
+            params.append(g_param)
+
+    # Debugging: log the incoming filters and the final SQL query + params
+    try:
+        print("FILTER ARGS:", dict(request.args))
+        print("SQL:", query)
+        print("PARAMS:", params)
+    except Exception:
+        pass
 
     rows = db.execute(query, params).fetchall()
 
