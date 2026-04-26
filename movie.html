@@ -1,96 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movie Details</title>
-    <link rel="stylesheet" href="theme.css">
-    <style>
-        .movie-page {
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 20px;
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Details - MovieHub</title>
+    <link rel="stylesheet" href="theme.css">
+    <style>
+        /* Specific styles for the Movie Details layout */
+        .details-container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 40px auto;
+            display: flex;
+            gap: 40px;
+            background: var(--bg-secondary);
+            padding: 30px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
 
-        .movie-card {
-            background: #1e1e1e;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
-        }
+        .poster-section img {
+            width: 300px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
 
-        .movie-card h1 {
-            margin-bottom: 15px;
-        }
+        .info-section {
+            flex: 1;
+        }
 
-        .movie-card p {
-            margin-bottom: 12px;
-            line-height: 1.6;
-        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: bold;
+        }
 
-        .back-link {
-            display: inline-block;
-            margin: 20px 0;
-            color: white;
-            text-decoration: none;
-        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
 
-        .back-link:hover {
-            color: #9b5cff;
-        }
-    </style>
+        .movie-title {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+
+        .movie-meta {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .overview-text {
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+        }
+
+        .stat-item b {
+            color: var(--accent);
+        }
+
+        #loadingMessage {
+            text-align: center;
+            margin-top: 100px;
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+        }
+    </style>
 </head>
 <body>
 
-    <header class="navbar">
-        <div class="logo">MovieHub</div>
-        <nav class="nav-links">
-            <a href="Home.html">Home</a>
-            <a href="Filters.html">Filters</a>
-            <a href="search.html">Search</a>
-        </nav>
-    </header>
+    <header class="navbar">
+        <div class="logo">MovieHub</div>
+        <nav class="nav-links">
+            <a href="Home.html">Home</a>
+            <a href="Filters.html">Filters</a>
+            <a href="search.html">Search</a>
+        </nav>
+    </header>
 
-    <main class="movie-page">
-        <a href="search.html" class="back-link">← Back to Search</a>
+    <div id="loadingMessage">Loading movie details...</div>
 
-        <div class="movie-card">
-            <h1 id="title">Loading...</h1>
-            <p><strong>Year:</strong> <span id="year">Loading...</span></p>
-            <p><strong>Runtime:</strong> <span id="runtime">Loading...</span></p>
-            <p><strong>Budget:</strong> <span id="budget">Loading...</span></p>
-            <p><strong>Revenue:</strong> <span id="revenue">Loading...</span></p>
-            <p><strong>Overview:</strong></p>
-            <p id="overview">Loading...</p>
-        </div>
-    </main>
+    <main class="details-container" id="movieDetails" style="display: none;">
+        <div class="poster-section">
+            <img src="./imgs/placeholder.png" alt="Movie Poster" id="moviePoster">
+        </div>
 
-    <script>
-        // get id from the URL
-        const params = new URLSearchParams(window.location.search);
-        const movieId = params.get("id");
+        <div class="info-section">
+            <a href="search.html" class="back-link">← Back to Search</a>
+            <h1 id="movieTitle" class="movie-title"></h1>
+            <p id="movieMeta" class="movie-meta"></p>
+            <p id="movieOverview" class="overview-text"></p>
+            
+            <div class="stats-grid">
+                <div class="stat-item"><b>Budget:</b> <span id="movieBudget"></span></div>
+                <div class="stat-item"><b>Revenue:</b> <span id="movieRevenue"></span></div>
+                <div class="stat-item"><b>Runtime:</b> <span id="movieRuntime"></span> mins</div>
+                <div class="stat-item"><b>ID:</b> <span id="movieID"></span></div>
+            </div>
+        </div>
+    </main>
 
-        // stop page breaking if no id is given
-        if (!movieId) {
-            document.getElementById("title").innerText = "No movie selected";
-            document.getElementById("overview").innerText = "Please open this page from search results.";
-        } else {
-            fetch(`http://127.0.0.1:5000/movie/${movieId}`)
-                .then(response => response.json())
-                .then(movie => {
-                    document.getElementById("title").innerText = movie.title || "N/A";
-                    document.getElementById("year").innerText = movie.release_year || "N/A";
-                    document.getElementById("runtime").innerText = movie.runtime || "N/A";
-                    document.getElementById("budget").innerText = movie.budget || "N/A";
-                    document.getElementById("revenue").innerText = movie.revenue || "N/A";
-                    document.getElementById("overview").innerText = movie.overview || "No overview available.";
-                })
-                .catch(error => {
-                    console.error("Error loading movie:", error);
-                    document.getElementById("title").innerText = "Error loading movie";
-                    document.getElementById("overview").innerText = "There was a problem loading the movie details.";
-                });
-        }
-    </script>
-</body>
-</html>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const params = new URLSearchParams(window.location.search);
+            const movieId = params.get('id');
+
+            if (!movieId) {
+                document.getElementById('loadingMessage').innerHTML = "No movie selected. <a href='search.html' style='color:var(--accent)'>Go back to search</a>";
+                return;
+            }
+
+            // Using Port 5001 as per your app.py
+            fetch(`http://127.0.0
