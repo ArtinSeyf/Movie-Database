@@ -1,25 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Movie Details - MovieHub</title>
-    <link rel="stylesheet" href="theme.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Details</title>
+    <link rel="stylesheet" href="theme.css">
+    <style>
+        .movie-page {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .movie-card {
+            background: #1e1e1e;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+        }
+
+        .movie-card h1 {
+            margin-bottom: 15px;
+        }
+
+        .movie-card p {
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin: 20px 0;
+            color: white;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            color: #9b5cff;
+        }
+    </style>
 </head>
 <body>
 
-    <header class="navbar">
-        <div class="logo">MovieHub</div>
-        <nav class="links">
-            <a href="Home.html">Home</a>
-            <a href="Filters.html">Filters</a>
-            <a href="search.html">Search</a>
-        </nav>
-    </header>
+    <header class="navbar">
+        <div class="logo">MovieHub</div>
+        <nav class="nav-links">
+            <a href="Home.html">Home</a>
+            <a href="Filters.html">Filters</a>
+            <a href="search.html">Search</a>
+        </nav>
+    </header>
 
-    <main id="movie-content" class="results-section" style="margin-top: 50px;">
-        <p style="text-align: center;">Loading movie details...</p>
-    </main>
+    <main class="movie-page">
+        <a href="search.html" class="back-link">← Back to Search</a>
 
-    <script src="movie.js"></script>
+        <div class="movie-card">
+            <h1 id="title">Loading...</h1>
+            <p><strong>Year:</strong> <span id="year">Loading...</span></p>
+            <p><strong>Runtime:</strong> <span id="runtime">Loading...</span></p>
+            <p><strong>Budget:</strong> <span id="budget">Loading...</span></p>
+            <p><strong>Revenue:</strong> <span id="revenue">Loading...</span></p>
+            <p><strong>Overview:</strong></p>
+            <p id="overview">Loading...</p>
+        </div>
+    </main>
+
+    <script>
+        // get id from the URL
+        const params = new URLSearchParams(window.location.search);
+        const movieId = params.get("id");
+
+        // stop page breaking if no id is given
+        if (!movieId) {
+            document.getElementById("title").innerText = "No movie selected";
+            document.getElementById("overview").innerText = "Please open this page from search results.";
+        } else {
+            fetch(`http://127.0.0.1:5000/movie/${movieId}`)
+                .then(response => response.json())
+                .then(movie => {
+                    document.getElementById("title").innerText = movie.title || "N/A";
+                    document.getElementById("year").innerText = movie.release_year || "N/A";
+                    document.getElementById("runtime").innerText = movie.runtime || "N/A";
+                    document.getElementById("budget").innerText = movie.budget || "N/A";
+                    document.getElementById("revenue").innerText = movie.revenue || "N/A";
+                    document.getElementById("overview").innerText = movie.overview || "No overview available.";
+                })
+                .catch(error => {
+                    console.error("Error loading movie:", error);
+                    document.getElementById("title").innerText = "Error loading movie";
+                    document.getElementById("overview").innerText = "There was a problem loading the movie details.";
+                });
+        }
+    </script>
 </body>
 </html>
