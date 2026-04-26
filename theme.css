@@ -119,6 +119,23 @@ p, label {
     transform: translateY(-15px);
     transition: transform 0.3s ease, box-shadow 0.3s ease; /*smoother transition*/
 }
+
+/* Hover/interaction on top-rated and grid posters to match home page */
+.HWTops img,
+.KTops img,
+.BWTops img,
+.AutoMove img {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.HWTops img:hover,
+.KTops img:hover,
+.BWTops img:hover,
+.AutoMove img:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+}
 .ScrollMovies::-webkit-scrollbar { /*get rid of scroll bar*/
     display: none;
 }
