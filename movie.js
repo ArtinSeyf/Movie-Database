@@ -1,41 +1,28 @@
+// 1. Get the movie ID from the URL (e.g., movie.html?id=100)
 const params = new URLSearchParams(window.location.search);
-const movieId = params.get('id');
-const contentArea = document.getElementById('movie-content');
+const movieId = params.get("id");
 
-if (movieId) {
+// 2. Stop the page from breaking if no ID is provided in the URL
+if (!movieId) {
+    document.getElementById("title").innerText = "No movie selected";
+    document.getElementById("overview").innerText = "Please open this page from search results.";
+} else {
+    // 3. Fetch the specific movie data from the Flask backend [cite: 8, 92]
     fetch(`http://127.0.0.1:5000/movie/${movieId}`)
         .then(response => response.json())
         .then(movie => {
-            if (movie.error) {
-                contentArea.innerHTML = "<h2>Movie not found!</h2>";
-            } else {
-                contentArea.innerHTML = `
-                    <div style="display: flex; flex-direction: column; gap: 20px; padding: 20px;">
-                        <h1 style="color: var(--accent); margin: 0;">${movie.title}</h1>
-                        
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                            <p><strong>Year:</strong> ${movie.release_year}</p>
-                            <p><strong>Runtime:</strong> ${movie.runtime} min</p>
-                            <p><strong>Budget:</strong> $${movie.budget.toLocaleString()}</p>
-                            <p><strong>Revenue:</strong> $${movie.revenue.toLocaleString()}</p>
-                        </div>
-
-                        <div style="margin-top: 10px;">
-                            <h3 style="color: var(--accent);">Overview</h3>
-                            <p style="line-height: 1.6; color: var(--text-secondary);">${movie.overview}</p>
-                        </div>
-
-                        <button onclick="window.history.back()" class="clear-btn" style="width: fit-content; margin-top: 20px;">
-                            ← Go Back
-                        </button>
-                    </div>
-                `;
-            }
+            // 4. Update the HTML elements with the data from the database
+            document.getElementById("title").innerText = movie.title || "N/A";
+            document.getElementById("year").innerText = movie.release_year || "N/A";
+            document.getElementById("runtime").innerText = movie.runtime || "N/A";
+            document.getElementById("budget").innerText = movie.budget || "N/A";
+            document.getElementById("revenue").innerText = movie.revenue || "N/A";
+            document.getElementById("overview").innerText = movie.overview || "No overview available.";
         })
         .catch(error => {
-            console.error("Error:", error);
-            contentArea.innerHTML = "<h2>Server Error. Please ensure the backend is running.</h2>";
+            // 5. Log errors to the Chrome Console for debugging 
+            console.error("Error loading movie:", error);
+            document.getElementById("title").innerText = "Error loading movie";
+            document.getElementById("overview").innerText = "There was a problem loading the movie details.";
         });
-} else {
-    contentArea.innerHTML = "<h2>No movie selected.</h2>";
 }
