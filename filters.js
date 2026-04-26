@@ -95,6 +95,9 @@ document.addEventListener("DOMContentLoaded", function () {
                             <p>Budget: ${movie.budget || "N/A"} — Revenue: ${movie.revenue || "N/A"}</p>
                         `;
 
+                        card.style.cursor = "pointer";
+                        card.onclick = () => window.location.href = `movie.html?id=${movie.id}`;
+
                         container.appendChild(card);
                     });
                 })

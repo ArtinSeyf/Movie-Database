@@ -37,6 +37,9 @@ function searchMovies() {
                     <p>Year: ${movie.release_year || "N/A"}</p>
                 `;
 
+                card.style.cursor = "pointer";
+                card.onclick = () => window.location.href = `movie.html?id=${movie.id}`;
+
                 resultsGrid.appendChild(card);
 
             });
