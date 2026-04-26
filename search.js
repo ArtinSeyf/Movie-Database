@@ -10,7 +10,13 @@ function searchMovies() {
         return;
     }
 
-    fetch(`http://127.0.0.1:5000/search?query=${query}`)
+    // backend runs on port 5001; use hostname fallback for file:// cases
+    const backendPort = 5001;
+    const host = location.hostname || 'localhost';
+    const url = `http://${host}:${backendPort}/search?q=${encodeURIComponent(query)}`;
+    console.log('Searching URL:', url);
+
+    fetch(url)
         .then(response => response.json())
         .then(data => {
 
