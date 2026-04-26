@@ -1,7 +1,7 @@
 
 /* Use global theme variables from theme.css so this page matches the site */
 body {
-    font-family: inherit; /* inherits from theme.css --font-family */
+   /* font-family: inherit;  inherits from theme.css --font-family */
     margin: 0;
     padding: 0;
     background: var(--bg-main);
