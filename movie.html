@@ -6,7 +6,6 @@
     <title>Movie Details - MovieHub</title>
     <link rel="stylesheet" href="theme.css">
     <style>
-        /* Specific styles for the Movie Details layout */
         .details-container {
             width: 90%;
             max-width: 1100px;
@@ -17,66 +16,41 @@
             padding: 30px;
             border-radius: var(--radius);
             border: 1px solid var(--border);
-            box-shadow: var(--shadow);
         }
-
-        .poster-section img {
+        .poster-section img { width: 300px; border-radius: 8px; }
+        .info-section { flex: 1; }
+        .movie-title { font-size: 2.5rem; color: var(--accent); margin-bottom: 10px; }
+        
+        /* Fallback Search Styles */
+        #fallbackSearch {
+            text-align: center;
+            padding: 50px;
+            background: var(--bg-secondary);
+            margin: 20px;
+            border-radius: var(--radius);
+        }
+        .mini-search-input {
+            padding: 10px;
             width: 300px;
             border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            border: 1px solid var(--border);
+            background: #000;
+            color: white;
         }
-
-        .info-section {
-            flex: 1;
+        .search-results-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
         }
-
-        .back-link {
-            display: inline-block;
-            margin-bottom: 20px;
-            color: var(--accent);
-            text-decoration: none;
-            font-weight: bold;
+        .search-results-list li {
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
         }
-
-        .back-link:hover {
-            text-decoration: underline;
-        }
-
-        .movie-title {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            color: var(--accent);
-        }
-
-        .movie-meta {
-            color: var(--text-secondary);
-            margin-bottom: 20px;
-            font-style: italic;
-        }
-
-        .overview-text {
-            line-height: 1.8;
-            margin-bottom: 20px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            border-top: 1px solid var(--border);
-            padding-top: 20px;
-        }
-
-        .stat-item b {
-            color: var(--accent);
-        }
-
-        #loadingMessage {
-            text-align: center;
-            margin-top: 100px;
-            font-size: 1.5rem;
-            color: var(--text-secondary);
-        }
+        .search-results-list li:hover { color: var(--accent); }
     </style>
 </head>
 <body>
@@ -90,37 +64,67 @@
         </nav>
     </header>
 
-    <div id="loadingMessage">Loading movie details...</div>
+    <div id="fallbackSearch" style="display: none;">
+        <h2>Select a Movie to View Details</h2>
+        <p>Type a movie name below to load its information:</p>
+        <input type="text" id="manualInput" class="mini-search-input" placeholder="e.g. Inception">
+        <ul id="manualResults" class="search-results-list"></ul>
+    </div>
 
     <main class="details-container" id="movieDetails" style="display: none;">
         <div class="poster-section">
-            <img src="./imgs/placeholder.png" alt="Movie Poster" id="moviePoster">
+            <img src="./imgs/placeholder.png" alt="Movie Poster">
         </div>
-
         <div class="info-section">
-            <a href="search.html" class="back-link">← Back to Search</a>
             <h1 id="movieTitle" class="movie-title"></h1>
-            <p id="movieMeta" class="movie-meta"></p>
-            <p id="movieOverview" class="overview-text"></p>
-            
-            <div class="stats-grid">
-                <div class="stat-item"><b>Budget:</b> <span id="movieBudget"></span></div>
-                <div class="stat-item"><b>Revenue:</b> <span id="movieRevenue"></span></div>
-                <div class="stat-item"><b>Runtime:</b> <span id="movieRuntime"></span> mins</div>
-                <div class="stat-item"><b>ID:</b> <span id="movieID"></span></div>
-            </div>
+            <p id="movieOverview" style="line-height: 1.6;"></p>
+            <p><b>Release Year:</b> <span id="movieYear"></span></p>
+            <p><b>Budget:</b> <span id="movieBudget"></span></p>
         </div>
     </main>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const params = new URLSearchParams(window.location.search);
-            const movieId = params.get('id');
+        const params = new URLSearchParams(window.location.search);
+        const movieId = params.get('id');
+        const backendUrl = "http://127.0.0.1:5001"; // Matches your app.py
 
-            if (!movieId) {
-                document.getElementById('loadingMessage').innerHTML = "No movie selected. <a href='search.html' style='color:var(--accent)'>Go back to search</a>";
-                return;
-            }
+        if (movieId) {
+            loadMovie(movieId);
+        } else {
+            document.getElementById('fallbackSearch').style.display = 'block';
+        }
 
-            // Using Port 5001 as per your app.py
-            fetch(`http://127.0.0
+        function loadMovie(id) {
+            fetch(`${backendUrl}/movie/${id}`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('fallbackSearch').style.display = 'none';
+                    document.getElementById('movieDetails').style.display = 'flex';
+                    document.getElementById('movieTitle').innerText = data.title;
+                    document.getElementById('movieOverview').innerText = data.overview;
+                    document.getElementById('movieYear').innerText = data.release_year;
+                    document.getElementById('movieBudget').innerText = "$" + data.budget.toLocaleString();
+                });
+        }
+
+        // Manual search logic just in case teammates' pages don't link correctly
+        document.getElementById('manualInput').addEventListener('input', (e) => {
+            const q = e.target.value;
+            if (q.length < 2) return;
+            
+            fetch(`${backendUrl}/search?q=${q}`)
+                .then(res => res.json())
+                .then(data => {
+                    const list = document.getElementById('manualResults');
+                    list.innerHTML = "";
+                    data.forEach(m => {
+                        const li = document.createElement('li');
+                        li.innerText = `${m.title} (${m.release_year})`;
+                        li.onclick = () => loadMovie(m.id);
+                        list.appendChild(li);
+                    });
+                });
+        });
+    </script>
+</body>
+</html>
