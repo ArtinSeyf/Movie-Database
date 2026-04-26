@@ -5,126 +5,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movie Details - MovieHub</title>
     <link rel="stylesheet" href="theme.css">
-    <style>
-        .details-container {
-            width: 90%;
-            max-width: 1100px;
-            margin: 40px auto;
-            display: flex;
-            gap: 40px;
-            background: var(--bg-secondary);
-            padding: 30px;
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-        }
-        .poster-section img { width: 300px; border-radius: 8px; }
-        .info-section { flex: 1; }
-        .movie-title { font-size: 2.5rem; color: var(--accent); margin-bottom: 10px; }
-        
-        /* Fallback Search Styles */
-        #fallbackSearch {
-            text-align: center;
-            padding: 50px;
-            background: var(--bg-secondary);
-            margin: 20px;
-            border-radius: var(--radius);
-        }
-        .mini-search-input {
-            padding: 10px;
-            width: 300px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            background: #000;
-            color: white;
-        }
-        .search-results-list {
-            list-style: none;
-            padding: 0;
-            margin-top: 20px;
-            max-width: 400px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .search-results-list li {
-            padding: 10px;
-            border-bottom: 1px solid var(--border);
-            cursor: pointer;
-        }
-        .search-results-list li:hover { color: var(--accent); }
-    </style>
 </head>
 <body>
-
+ 
     <header class="navbar">
         <div class="logo">MovieHub</div>
         <nav class="nav-links">
             <a href="Home.html">Home</a>
+            <a href="TopRated.html">Top Rated</a>
             <a href="Filters.html">Filters</a>
             <a href="search.html">Search</a>
         </nav>
     </header>
-
-    <div id="fallbackSearch" style="display: none;">
-        <h2>Select a Movie to View Details</h2>
-        <p>Type a movie name below to load its information:</p>
-        <input type="text" id="manualInput" class="mini-search-input" placeholder="e.g. Inception">
-        <ul id="manualResults" class="search-results-list"></ul>
+ 
+    <!-- Loading state -->
+    <div id="loadingState" style="text-align:center; padding:80px 20px; color: var(--text-secondary);">
+        <p>Loading movie...</p>
     </div>
-
-    <main class="details-container" id="movieDetails" style="display: none;">
-        <div class="poster-section">
-            <img src="./imgs/placeholder.png" alt="Movie Poster">
+ 
+    <!-- Error state -->
+    <div id="errorState" style="display:none; text-align:center; padding:80px 20px; max-width:500px; margin:0 auto;">
+        <h2>Movie not found</h2>
+        <p id="errorMsg">We couldn't load this movie.</p>
+        <div style="display:flex; gap:12px; justify-content:center; margin-top:24px;">
+            <a href="search.html" style="background:var(--accent); color:white; padding:10px 20px; border-radius:8px; text-decoration:none; font-weight:600;">Search Movies</a>
+            <a href="Home.html" style="border:1px solid var(--border); color:var(--text-main); padding:10px 20px; border-radius:8px; text-decoration:none; font-weight:600;">Go Home</a>
         </div>
-        <div class="info-section">
-            <h1 id="movieTitle" class="movie-title"></h1>
-            <p id="movieOverview" style="line-height: 1.6;"></p>
-            <p><b>Release Year:</b> <span id="movieYear"></span></p>
-            <p><b>Budget:</b> <span id="movieBudget"></span></p>
+    </div>
+ 
+    <!-- Movie detail -->
+    <main id="movieDetail" style="display:none; width:90%; max-width:1100px; margin:40px auto 60px;">
+ 
+        <!-- Title and genres -->
+        <div style="padding-bottom:24px; border-bottom:1px solid var(--border); margin-bottom:32px;">
+            <h1 id="movieTitle" style="font-size:2.4rem; color:var(--accent); margin-bottom:14px;"></h1>
+            <div id="movieGenres" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
         </div>
+ 
+        <!-- Overview -->
+        <div style="margin-bottom:32px;">
+            <h2 style="font-size:0.85rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-secondary); margin-bottom:12px;">Overview</h2>
+            <p id="movieOverview" style="color:var(--text-main); line-height:1.8; max-width:800px;"></p>
+        </div>
+ 
+        <!-- Stats -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:16px; margin-bottom:32px;">
+            <div class="movie-card">
+                <p style="font-size:0.8rem; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px;">Release Year</p>
+                <span id="movieYear" style="font-size:1.3rem; font-weight:700; color:var(--text-main);">—</span>
+            </div>
+            <div class="movie-card">
+                <p style="font-size:0.8rem; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px;">Runtime</p>
+                <span id="movieRuntime" style="font-size:1.3rem; font-weight:700; color:var(--text-main);">—</span>
+            </div>
+            <div class="movie-card">
+                <p style="font-size:0.8rem; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px;">Budget</p>
+                <span id="movieBudget" style="font-size:1.3rem; font-weight:700; color:var(--text-main);">—</span>
+            </div>
+            <div class="movie-card">
+                <p style="font-size:0.8rem; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px;">Revenue</p>
+                <span id="movieRevenue" style="font-size:1.3rem; font-weight:700; color:var(--text-main);">—</span>
+            </div>
+        </div>
+ 
+        <!-- Director -->
+        <div style="margin-bottom:32px;">
+            <h2 style="font-size:0.85rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-secondary); margin-bottom:12px;">Director</h2>
+            <p id="movieDirector" style="color:var(--text-main); font-size:1.1rem; font-weight:600;">—</p>
+        </div>
+ 
+        <!-- Cast -->
+        <div>
+            <h2 style="font-size:0.85rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-secondary); margin-bottom:12px;">Cast</h2>
+            <div id="movieCast" style="display:flex; flex-wrap:wrap; gap:10px;"></div>
+        </div>
+ 
     </main>
-
-    <script>
-        const params = new URLSearchParams(window.location.search);
-        const movieId = params.get('id');
-        const backendUrl = "http://127.0.0.1:5001"; // Matches your app.py
-
-        if (movieId) {
-            loadMovie(movieId);
-        } else {
-            document.getElementById('fallbackSearch').style.display = 'block';
-        }
-
-        function loadMovie(id) {
-            fetch(`${backendUrl}/movie/${id}`)
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById('fallbackSearch').style.display = 'none';
-                    document.getElementById('movieDetails').style.display = 'flex';
-                    document.getElementById('movieTitle').innerText = data.title;
-                    document.getElementById('movieOverview').innerText = data.overview;
-                    document.getElementById('movieYear').innerText = data.release_year;
-                    document.getElementById('movieBudget').innerText = "$" + data.budget.toLocaleString();
-                });
-        }
-
-        // Manual search logic just in case teammates' pages don't link correctly
-        document.getElementById('manualInput').addEventListener('input', (e) => {
-            const q = e.target.value;
-            if (q.length < 2) return;
-            
-            fetch(`${backendUrl}/search?q=${q}`)
-                .then(res => res.json())
-                .then(data => {
-                    const list = document.getElementById('manualResults');
-                    list.innerHTML = "";
-                    data.forEach(m => {
-                        const li = document.createElement('li');
-                        li.innerText = `${m.title} (${m.release_year})`;
-                        li.onclick = () => loadMovie(m.id);
-                        list.appendChild(li);
-                    });
-                });
-        });
-    </script>
+ 
+    <!-- Fallback search (no ?id= in URL) -->
+    <div id="fallbackSearch" style="display:none; text-align:center; padding:60px 20px; max-width:500px; margin:0 auto;">
+        <h2>Find a Movie</h2>
+        <p style="margin-bottom:24px;">Search below to find a movie and view its details.</p>
+        <input type="text" id="manualInput" class="search-input" placeholder="e.g. Inception, Avatar...">
+        <ul id="manualResults" style="list-style:none; padding:0; margin-top:16px; text-align:left; background:var(--bg-secondary); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden;"></ul>
+    </div>
+ 
+    <script src="movie.js"></script>
 </body>
 </html>
