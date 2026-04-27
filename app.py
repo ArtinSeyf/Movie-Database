@@ -72,6 +72,64 @@ def movie(id):
     return jsonify({"error": "not found"})
 
 
+# get genres for one movie
+@app.route("/movie/<int:id>/genres")
+def movie_genres(id):
+    db = get_db()
+
+    try:
+        rows = db.execute("""
+            SELECT genres.name
+            FROM genres
+            JOIN movie_genres ON genres.id = movie_genres.genre_id
+            WHERE movie_genres.movie_id = ?
+        """, (id,)).fetchall()
+
+        return jsonify([dict(row) for row in rows])
+
+    except sqlite3.OperationalError:
+        return jsonify([])
+
+
+# get director for one movie
+@app.route("/movie/<int:id>/director")
+def movie_director(id):
+    db = get_db()
+
+    try:
+        rows = db.execute("""
+            SELECT people.name
+            FROM people
+            JOIN movie_directors ON people.id = movie_directors.person_id
+            WHERE movie_directors.movie_id = ?
+        """, (id,)).fetchall()
+
+        return jsonify([dict(row) for row in rows])
+
+    except sqlite3.OperationalError:
+        return jsonify([])
+
+
+# get cast for one movie
+@app.route("/movie/<int:id>/cast")
+def movie_cast(id):
+    db = get_db()
+
+    try:
+        rows = db.execute("""
+            SELECT people.name
+            FROM people
+            JOIN movie_cast ON people.id = movie_cast.person_id
+            WHERE movie_cast.movie_id = ?
+            LIMIT 10
+        """, (id,)).fetchall()
+
+        return jsonify([dict(row) for row in rows])
+
+    except sqlite3.OperationalError:
+        return jsonify([])
+
+
 # search movies by title
 @app.route("/search")
 def search():
@@ -90,7 +148,7 @@ def search():
     return jsonify([dict(row) for row in rows])
 
 
-# filter movies by year, budget and revenue
+# filter movies by year, budget, revenue and basic genre text matching
 @app.route("/filter")
 def filter_movies():
     year_min = request.args.get("yearMin")
@@ -133,7 +191,7 @@ def filter_movies():
         query += " AND revenue <= ?"
         params.append(int(revenue_max))
 
-    # simple genre workaround used before proper genre tables were connected
+    # simple genre workaround
     if genres:
         genre_clauses = []
 
@@ -146,13 +204,6 @@ def filter_movies():
             g_param = f"%{g.lower()}%"
             params.append(g_param)
             params.append(g_param)
-
-    try:
-        print("FILTER ARGS:", dict(request.args))
-        print("SQL:", query)
-        print("PARAMS:", params)
-    except Exception:
-        pass
 
     rows = db.execute(query, params).fetchall()
 
