@@ -8,23 +8,14 @@ credits = pd.read_csv("archive/credits.csv", low_memory=False)
 
 # keep only the movie columns we need
 movies = movies[
-    [
-        "id",
-        "title",
-        "overview",
-        "release_date",
-        "runtime",
-        "budget",
-        "revenue",
-        "genres"
-    ]
+    ["id", "title", "overview", "release_date", "runtime", "budget", "revenue", "genres"]
 ]
 
 # clean movie id
 movies = movies[pd.to_numeric(movies["id"], errors="coerce").notnull()]
 movies["id"] = movies["id"].astype(int)
 
-# extract year from release_date
+# extract release year
 movies["release_year"] = movies["release_date"].str[:4]
 movies = movies[pd.to_numeric(movies["release_year"], errors="coerce").notnull()]
 movies["release_year"] = movies["release_year"].astype(int)
@@ -34,11 +25,11 @@ movies["budget"] = pd.to_numeric(movies["budget"], errors="coerce").fillna(0).as
 movies["revenue"] = pd.to_numeric(movies["revenue"], errors="coerce").fillna(0).astype(int)
 movies["runtime"] = pd.to_numeric(movies["runtime"], errors="coerce").fillna(0).astype(int)
 
-# remove missing titles and duplicate movie ids
+# remove bad titles and duplicate movie ids
 movies = movies.dropna(subset=["title"])
 movies = movies.drop_duplicates(subset=["id"], keep="first")
 
-# clean credits id so it matches movie id
+# clean credits id
 credits = credits[pd.to_numeric(credits["id"], errors="coerce").notnull()]
 credits["id"] = credits["id"].astype(int)
 
@@ -46,7 +37,7 @@ credits["id"] = credits["id"].astype(int)
 conn = sqlite3.connect("movies.db")
 cursor = conn.cursor()
 
-# clear old data first so running this again does not duplicate rows
+# clear old data first
 cursor.execute("DELETE FROM movie_directors")
 cursor.execute("DELETE FROM movie_cast")
 cursor.execute("DELETE FROM movie_genres")
@@ -56,15 +47,7 @@ cursor.execute("DELETE FROM movies")
 
 # insert main movie data
 movies[
-    [
-        "id",
-        "title",
-        "overview",
-        "release_year",
-        "runtime",
-        "budget",
-        "revenue"
-    ]
+    ["id", "title", "overview", "release_year", "runtime", "budget", "revenue"]
 ].to_sql("movies", conn, if_exists="append", index=False)
 
 # insert genres
@@ -89,15 +72,14 @@ for _, row in movies.iterrows():
     except:
         pass
 
-# insert cast and directors from credits.csv
+# insert cast and directors
 for _, row in credits.iterrows():
     movie_id = row["id"]
 
-    # cast column stores actor information
     try:
         cast_list = ast.literal_eval(row["cast"])
 
-        # only keep top 10 cast members so it stays simple
+        # only use top 10 cast members
         for actor in cast_list[:10]:
             person_id = actor.get("id")
             name = actor.get("name")
@@ -115,7 +97,6 @@ for _, row in credits.iterrows():
     except:
         pass
 
-    # crew column stores director information
     try:
         crew_list = ast.literal_eval(row["crew"])
 

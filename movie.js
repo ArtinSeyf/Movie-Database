@@ -47,13 +47,13 @@ function loadMovie(id) {
         .then(res => res.json())
         .then(data => {
             if (data.error) {
-                showError("This movie does not exist in our database.");
+                showError("This movie doesn't exist in our database.");
                 return;
             }
 
             document.title = `${data.title} - MovieHub`;
             document.getElementById("movieTitle").innerText = data.title || "N/A";
-            document.getElementById("movieOverview").innerText = data.overview || "No overview available for this movie.";
+            document.getElementById("movieOverview").innerText = data.overview || "No overview available.";
             document.getElementById("movieYear").innerText = data.release_year || "N/A";
             document.getElementById("movieRuntime").innerText = formatRuntime(data.runtime);
             document.getElementById("movieBudget").innerText = formatMoney(data.budget);
@@ -77,7 +77,7 @@ function loadGenres(id) {
             const container = document.getElementById("movieGenres");
 
             if (!Array.isArray(data) || data.length === 0) {
-                container.innerHTML = "<span class='genre-tag'>No genre information available.</span>";
+                container.innerHTML = "<span class='genre-tag'>N/A</span>";
                 return;
             }
 
@@ -85,10 +85,7 @@ function loadGenres(id) {
                 .map(g => `<span class="genre-tag">${g.name}</span>`)
                 .join("");
         })
-        .catch(() => {
-            const container = document.getElementById("movieGenres");
-            container.innerHTML = "<span class='genre-tag'>No genre information available.</span>";
-        });
+        .catch(() => {});
 }
 
 function loadDirector(id) {
@@ -98,16 +95,13 @@ function loadDirector(id) {
             const el = document.getElementById("movieDirector");
 
             if (!Array.isArray(data) || data.length === 0) {
-                el.innerText = "No director information available.";
+                el.innerText = "N/A";
                 return;
             }
 
             el.innerText = data.map(d => d.name).join(", ");
         })
-        .catch(() => {
-            const el = document.getElementById("movieDirector");
-            el.innerText = "No director information available.";
-        });
+        .catch(() => {});
 }
 
 function loadCast(id) {
@@ -117,7 +111,7 @@ function loadCast(id) {
             const container = document.getElementById("movieCast");
 
             if (!Array.isArray(data) || data.length === 0) {
-                container.innerHTML = "<span class='cast-member'>No cast information available.</span>";
+                container.innerHTML = "<span class='cast-member'>N/A</span>";
                 return;
             }
 
@@ -125,10 +119,7 @@ function loadCast(id) {
                 .map(p => `<span class="cast-member">${p.name}</span>`)
                 .join("");
         })
-        .catch(() => {
-            const container = document.getElementById("movieCast");
-            container.innerHTML = "<span class='cast-member'>No cast information available.</span>";
-        });
+        .catch(() => {});
 }
 
 function setupFallbackSearch() {
