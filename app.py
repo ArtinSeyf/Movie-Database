@@ -1,17 +1,17 @@
 from flask import Flask, jsonify, request
 from flask import send_from_directory
-import sqlite3
 
 try:
     from flask_cors import CORS
 except Exception:
     CORS = None
 
+import sqlite3
 
-# serve frontend files directly from the project root
+# serve static frontend files directly from the project root
 app = Flask(__name__, static_folder=".", static_url_path="")
 
-# enable CORS if flask_cors is installed
+# enable flask-cors if available
 if CORS:
     CORS(app)
 
@@ -38,39 +38,19 @@ def home():
     return "backend running"
 
 
-# serve main frontend pages
-@app.route("/Home.html")
-def home_page():
-    return send_from_directory(".", "Home.html")
-
-
+# serve filters page
 @app.route("/Filters.html")
 def filters_page():
     return send_from_directory(".", "Filters.html")
 
 
-@app.route("/search.html")
-def search_page():
-    return send_from_directory(".", "search.html")
-
-
-@app.route("/movie.html")
-def movie_page():
-    return send_from_directory(".", "movie.html")
-
-
-@app.route("/TopRated.html")
-def top_rated_page():
-    return send_from_directory(".", "TopRated.html")
-
-
-# get movies used for browsing/homepage
+# get movies used for homepage
 @app.route("/movies")
 def movies():
     db = get_db()
 
     rows = db.execute(
-        "SELECT id, title, release_year FROM movies LIMIT 100"
+        "SELECT id, title, release_year FROM movies LIMIT 50"
     ).fetchall()
 
     return jsonify([dict(row) for row in rows])
@@ -92,96 +72,25 @@ def movie(id):
     return jsonify({"error": "not found"})
 
 
-# get genres for one movie
-@app.route("/movie/<int:id>/genres")
-def movie_genres(id):
-    db = get_db()
-
-    rows = db.execute("""
-        SELECT genres.name
-        FROM genres
-        JOIN movie_genres ON genres.id = movie_genres.genre_id
-        WHERE movie_genres.movie_id = ?
-    """, (id,)).fetchall()
-
-    return jsonify([dict(row) for row in rows])
-
-
-# get cast for one movie
-@app.route("/movie/<int:id>/cast")
-def movie_cast(id):
-    db = get_db()
-
-    rows = db.execute("""
-        SELECT people.name
-        FROM people
-        JOIN movie_cast ON people.id = movie_cast.person_id
-        WHERE movie_cast.movie_id = ?
-        LIMIT 10
-    """, (id,)).fetchall()
-
-    return jsonify([dict(row) for row in rows])
-
-
-# get director for one movie
-@app.route("/movie/<int:id>/director")
-def movie_director(id):
-    db = get_db()
-
-    rows = db.execute("""
-        SELECT people.name
-        FROM people
-        JOIN movie_directors ON people.id = movie_directors.person_id
-        WHERE movie_directors.movie_id = ?
-    """, (id,)).fetchall()
-
-    return jsonify([dict(row) for row in rows])
-
-
-# search movies by title, actor or director
+# search movies by title
 @app.route("/search")
 def search():
-    query = request.args.get("q", "")
-    search_type = request.args.get("type", "title")
+    query = request.args.get("q")
 
     if not query:
         return jsonify([])
 
     db = get_db()
-    search_value = f"%{query}%"
 
-    if search_type == "actor":
-        rows = db.execute("""
-            SELECT DISTINCT movies.id, movies.title, movies.release_year
-            FROM movies
-            JOIN movie_cast ON movies.id = movie_cast.movie_id
-            JOIN people ON movie_cast.person_id = people.id
-            WHERE people.name LIKE ?
-            LIMIT 50
-        """, (search_value,)).fetchall()
-
-    elif search_type == "director":
-        rows = db.execute("""
-            SELECT DISTINCT movies.id, movies.title, movies.release_year
-            FROM movies
-            JOIN movie_directors ON movies.id = movie_directors.movie_id
-            JOIN people ON movie_directors.person_id = people.id
-            WHERE people.name LIKE ?
-            LIMIT 50
-        """, (search_value,)).fetchall()
-
-    else:
-        rows = db.execute("""
-            SELECT id, title, release_year
-            FROM movies
-            WHERE title LIKE ?
-            LIMIT 50
-        """, (search_value,)).fetchall()
+    rows = db.execute(
+        "SELECT id, title, release_year FROM movies WHERE title LIKE ? LIMIT 20",
+        (f"%{query}%",)
+    ).fetchall()
 
     return jsonify([dict(row) for row in rows])
 
 
-# filter movies by year, budget, revenue, genre, actor and director
+# filter movies by year, budget and revenue
 @app.route("/filter")
 def filter_movies():
     year_min = request.args.get("yearMin")
@@ -194,81 +103,56 @@ def filter_movies():
     revenue_max = request.args.get("revenueMax")
 
     genres = request.args.getlist("genres")
-    actor = request.args.get("actor")
-    director = request.args.get("director")
 
     db = get_db()
 
-    query = """
-        SELECT DISTINCT movies.id, movies.title, movies.release_year,
-                        movies.budget, movies.revenue, movies.overview
-        FROM movies
-        WHERE 1=1
-    """
-
+    query = "SELECT id, title, release_year, budget, revenue, overview FROM movies WHERE 1=1"
     params = []
 
     if year_min:
-        query += " AND movies.release_year >= ?"
+        query += " AND release_year >= ?"
         params.append(int(year_min))
 
     if year_max:
-        query += " AND movies.release_year <= ?"
+        query += " AND release_year <= ?"
         params.append(int(year_max))
 
     if budget_min:
-        query += " AND movies.budget >= ?"
+        query += " AND budget >= ?"
         params.append(int(budget_min))
 
     if budget_max:
-        query += " AND movies.budget <= ?"
+        query += " AND budget <= ?"
         params.append(int(budget_max))
 
     if revenue_min:
-        query += " AND movies.revenue >= ?"
+        query += " AND revenue >= ?"
         params.append(int(revenue_min))
 
     if revenue_max:
-        query += " AND movies.revenue <= ?"
+        query += " AND revenue <= ?"
         params.append(int(revenue_max))
 
+    # simple genre workaround used before proper genre tables were connected
     if genres:
-        placeholders = ",".join(["?"] * len(genres))
+        genre_clauses = []
 
-        query += f"""
-            AND movies.id IN (
-                SELECT movie_genres.movie_id
-                FROM movie_genres
-                JOIN genres ON movie_genres.genre_id = genres.id
-                WHERE genres.name IN ({placeholders})
-            )
-        """
+        for _ in genres:
+            genre_clauses.append("(LOWER(title) LIKE ? OR LOWER(overview) LIKE ?)")
 
-        params.extend(genres)
+        query += " AND (" + " OR ".join(genre_clauses) + ")"
 
-    if actor:
-        query += """
-            AND movies.id IN (
-                SELECT movie_cast.movie_id
-                FROM movie_cast
-                JOIN people ON movie_cast.person_id = people.id
-                WHERE people.name LIKE ?
-            )
-        """
-        params.append(f"%{actor}%")
+        for g in genres:
+            g_param = f"%{g.lower()}%"
+            params.append(g_param)
+            params.append(g_param)
 
-    if director:
-        query += """
-            AND movies.id IN (
-                SELECT movie_directors.movie_id
-                FROM movie_directors
-                JOIN people ON movie_directors.person_id = people.id
-                WHERE people.name LIKE ?
-            )
-        """
-        params.append(f"%{director}%")
-
-    query += " LIMIT 100"
+    try:
+        print("FILTER ARGS:", dict(request.args))
+        print("SQL:", query)
+        print("PARAMS:", params)
+    except Exception:
+        pass
 
     rows = db.execute(query, params).fetchall()
 
